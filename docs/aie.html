@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
   <head>
@@ -39,7 +38,17 @@
 <!-- この辺からほんへ -->
     <div class="container text-center mb-4 border-bottom">
       <h1 class="row"> ヌ </h1>
-      <p class="fst-italic">ヒトとAIの性癖がヌンクロし、ヌワーが極限まで高まった時、究極のヌが降臨し、全てが救われるのだ。</p>
+      <p class="fst-italic row">ヒトとAIの性癖がヌンクロし、ヌワーが極限まで高まった時、究極のヌが降臨し、全てが救われるのだ。</p>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-8 mb-1"></div>
+        <div class="col-4">
+          <div class="input-group mb-4">
+            <input type="text" class="form-control" placeholder="検索" aria-label="検索" aria-describedby="検索" id="search">
+          </div>
+        </div>
+      </div>
     </div>
     <div class="container">
       <div class="row" id="ヌ">
@@ -56,8 +65,11 @@
     }
   </style>
   <script>
+  let nus=[]
+  let ヌ=document.getElementById("ヌ");
+  let search=document.getElementById("search");
+  search.oninput=inputed;
   function pr(data){
-    let ヌ=document.getElementById("ヌ");
     for(let nu of data){
       var element=document.createElement("div");
       element.setAttribute("class","col-md-4");
@@ -76,7 +88,9 @@
       var cardtext=document.createElement("p");
       cardtext.setAttribute("class","card-text");
       cardtext.appendChild(document.createTextNode(nu.プロンプト));
-      cardbody.appendChild(cardtext)
+      cardbody.appendChild(cardtext);
+
+      nus.push(element);
 
       ヌ.insertBefore(element,ヌ.firstChild);
     }
@@ -88,5 +102,15 @@
 		.then( response => response.json())
 		.then( data => pr(data));
     });
+  function inputed(){
+    while(ヌ.firstChild){
+      ヌ.removeChild(ヌ.firstChild);
+    }
+    for(let nu of nus){
+      if(nu.textContent.match(search.value)){
+        ヌ.insertBefore(nu,ヌ.firstChild);
+      }
+    }
+  }
   </script>
 </html>
