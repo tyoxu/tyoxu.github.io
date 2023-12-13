@@ -32,7 +32,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: test
-        run: echo ${{github.event.head_commit.message}} > ./docs/test
+        run: echo '<a>' ${{github.event.head_commit.message}} </a> ./docs/test.html
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
