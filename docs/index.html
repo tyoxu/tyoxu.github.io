@@ -62,7 +62,7 @@
     window.addEventListener("load", ()=>{
       fetch("https://tyoxu.github.io/test.json")
         .then( response => response.json())
-        .then(document.getElementById("アプデ履歴").append(data));
+        .then(data => document.getElementById("アプデ履歴").append(data));
         });
   </script>
 </html>
