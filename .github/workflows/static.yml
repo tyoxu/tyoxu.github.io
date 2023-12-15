@@ -32,7 +32,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 3
+          fetch-depth: 0
       - name: test
         run: echo '["${{github.event.commits[0].timestamp}} ${{github.event.commits[0].message}}","${{github.event.commits[1].timestamp}} ${{github.event.commits[1].message}}","${{github.event.commits[2].timestamp}} ${{github.event.commits[2].message}}"]' > ./docs/test.json
       - name: Setup Pages
