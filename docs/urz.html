@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>URZ ルーレット</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101116;
+      --panel: #1b1d26;
+      --text: #f6f6f8;
+      --accent: #f3c64e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; padding: 24px 16px 40px;
+      background: radial-gradient(ellipse at top, #282a36 0%, var(--bg) 58%);
+      color: var(--text); font-family: system-ui, -apple-system, "Noto Sans JP", sans-serif;
+      display: flex; justify-content: center;
+    }
+    main { width: min(100%, 620px); display: flex; flex-direction: column; align-items: center; gap: 20px; }
+    h1 { margin: 0; font-size: clamp(1.35rem, 5vw, 2rem); letter-spacing: .06em; }
+    .reels { width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 12px; }
+    .reel {
+      width: min(100%, 560px); aspect-ratio: 16 / 3; min-width: 0;
+      position: relative; overflow: hidden; border: 2px solid #555968; border-radius: 12px;
+      background: var(--panel); box-shadow: 0 8px 28px #0008, inset 0 0 0 1px #ffffff0c;
+    }
+    .reel img {
+      display: block; width: 100%; height: 100%; object-fit: contain;
+      user-select: none; -webkit-user-drag: none;
+    }
+    .reel.spinning { border-color: var(--accent); box-shadow: 0 0 18px #f3c64e55; }
+    .reel.spinning img { filter: blur(1px) brightness(1.08); }
+    .reel::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(180deg, #0003, transparent 18%, transparent 82%, #0004);
+    }
+    .controls { width: 100%; display: grid; justify-items: center; gap: 10px; }
+    button {
+      width: min(100%, 440px); min-height: 58px; border: 0; border-radius: 14px;
+      padding: 14px 20px; background: var(--accent); color: #201b0d;
+      font: inherit; font-weight: 800; font-size: clamp(1rem, 4vw, 1.25rem);
+      cursor: pointer; box-shadow: 0 5px 0 #a67e20, 0 10px 22px #0005;
+      transition: transform .08s, filter .15s;
+    }
+    button:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 #a67e20; }
+    button:disabled { cursor: wait; filter: grayscale(.35); opacity: .8; }
+    #status { min-height: 1.5em; color: #c4c6d1; text-align: center; font-size: .95rem; }
+    .note { margin: 0; color: #9699a8; font-size: .82rem; text-align: center; line-height: 1.6; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>URZ ルーレット</h1>
+    <section class="reels" aria-label="ルーレット">
+      <div class="reel"><img id="plus" alt="プラスの結果" src="assets/urz_plus_0.png"></div>
+      <div class="reel"><img id="minus" alt="マイナスの結果" src="assets/urz_minus_0.png"></div>
+      <div class="reel"><img id="ogi" alt="オギの結果" src="assets/urz_ogi_0.png"></div>
+    </section>
+    <div class="controls">
+      <button id="spin" type="button">{T}: このボタンを押す</button>
+      <div id="status" role="status" aria-live="polite">ボタンを押してスタート</div>
+    </div>
+    <p class="note">画像は assets フォルダに配置してください。各カテゴリの番号は 0〜9 を使用します。</p>
+  </main>
+  <script>
+    const reels = [
+      { image: document.querySelector("#plus"), frame: document.querySelector("#plus").parentElement, prefix: "urz_plus_" },
+      { image: document.querySelector("#minus"), frame: document.querySelector("#minus").parentElement, prefix: "urz_minus_" },
+      { image: document.querySelector("#ogi"), frame: document.querySelector("#ogi").parentElement, prefix: "urz_ogi_" }
+    ];
+    const button = document.querySelector("#spin");
+    const status = document.querySelector("#status");
+    const SPIN_DURATION = 4000;
+    const IMAGE_COUNT = 10;
+    let spinning = false;
+    let tickTimers = [];
+
+    function randomIndex() {
+      return Math.floor(Math.random() * IMAGE_COUNT);
+    }
+    function imagePath(prefix, index) {
+      return `assets/${prefix}${index}.png`;
+    }
+    function setImage(reel, index) {
+      reel.image.src = imagePath(reel.prefix, index);
+    }
+
+    // 画像がない場合にも原因が分かるよう、壊れた画像の代わりに案内を表示する
+    reels.forEach(reel => {
+      reel.image.addEventListener("error", () => {
+        reel.image.alt = "画像が見つかりません：" + reel.image.src.split("/").pop();
+        reel.image.style.objectFit = "contain";
+        reel.image.style.background = "#252733";
+      });
+    });
+
+    button.addEventListener("click", () => {
+      if (spinning) return;
+      spinning = true;
+      button.disabled = true;
+      status.textContent = "回転中…";
+      reels.forEach(reel => reel.frame.classList.add("spinning"));
+
+      const startedAt = performance.now();
+      const finalIndices = reels.map(() => randomIndex());
+
+      reels.forEach((reel, i) => {
+        // 各段を少しずつ時間差で停止させる
+        const stopAt = SPIN_DURATION - (2 - i) * 360;
+        const tick = () => {
+          const elapsed = performance.now() - startedAt;
+          if (elapsed >= stopAt) {
+            setImage(reel, finalIndices[i]);
+            reel.frame.classList.remove("spinning");
+            return;
+          }
+          setImage(reel, randomIndex());
+          tickTimers[i] = window.setTimeout(tick, Math.max(45, 145 - elapsed / 35));
+        };
+        tick();
+      });
+
+      window.setTimeout(() => {
+        reels.forEach((reel, i) => {
+          setImage(reel, finalIndices[i]);
+          reel.frame.classList.remove("spinning");
+        });
+        spinning = false;
+        button.disabled = false;
+        status.textContent = "結果が決まりました！";
+      }, SPIN_DURATION + 50);
+    });
+  </script>
+</body>
+</html>
