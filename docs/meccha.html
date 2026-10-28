@@ -103,7 +103,7 @@
       number.addEventListener('change', () => setValue(number.value));
       document.getElementById('go-button').addEventListener('click', () => {
         const x = clampValue(Number(number.value));
-        const url = `https://scryfall.com/random/?q=s%3Ablb+or+%28s%3Ablc+and+cn%3C%3D40%29%29+language%3AJapanese+cmc%3A1${x}`;
+        const url = `https://scryfall.com/random/?q=(s:blb+or+(s:blc+and+cn<=40))+language:Japanese+cmc:${x}`;
         window.location.href = url;
       });
       setValue(0);
