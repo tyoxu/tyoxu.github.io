@@ -74,8 +74,8 @@
       <div class="controls">
         <label class="control-label" for="x-range">X = <output id="x-display">0</output></label>
         <div class="value-row">
-          <input id="x-range" type="range" min="0" max="99" step="1" value="0" aria-label="Xのスライダー">
-          <input id="x-number" type="number" min="0" max="99" step="1" value="0" inputmode="numeric" aria-label="Xの数値入力">
+          <input id="x-range" type="range" min="1" max="8" step="1" value="0" aria-label="Xのスライダー">
+          <input id="x-number" type="number" min="1" max="8" step="1" value="0" inputmode="numeric" aria-label="Xの数値入力">
         </div>
         <button id="go-button" type="button">Scryfallでランダムカードを開く</button>
         <p class="hint">X の値に対応するマナ総量で検索します</p>
@@ -87,7 +87,7 @@
       const slider = document.getElementById('x-range');
       const number = document.getElementById('x-number');
       const display = document.getElementById('x-display');
-      const clampValue = value => Math.min(99, Math.max(0, Number.isFinite(value) ? Math.trunc(value) : 0));
+      const clampValue = value => Math.min(8, Math.max(0, Number.isFinite(value) ? Math.trunc(value) : 0));
       function setValue(value) {
         const x = clampValue(Number(value));
         slider.value = String(x);
@@ -103,7 +103,7 @@
       number.addEventListener('change', () => setValue(number.value));
       document.getElementById('go-button').addEventListener('click', () => {
         const x = clampValue(Number(number.value));
-        const url = `https://scryfall.com/random/?q=s:blb%20cmc:${x}`;
+        const url = `https://scryfall.com/random/?q=s%3Ablb+or+%28s%3Ablc+and+cn%3C%3D40%29%29+language%3AJapanese+cmc%3A1${x}`;
         window.location.href = url;
       });
       setValue(0);
