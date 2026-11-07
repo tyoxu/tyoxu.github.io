@@ -21,11 +21,20 @@
     }
     main { width: min(100%, 620px); display: flex; flex-direction: column; align-items: center; gap: 20px; }
     h1 { margin: 0; font-size: clamp(1.35rem, 5vw, 2rem); letter-spacing: .06em; }
-    .reels { width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 12px; }
+    .reels { 
+      position: absolute;
+      left: 6.8%;
+      top: 64%;
+      width: 85.6%;
+      height: 29.3%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: stretch;
+      }
     .reel {
       width: min(100%, 560px); aspect-ratio: 16 / 3; min-width: 0;
-      position: relative; overflow: hidden; border: 2px solid #555968; border-radius: 12px;
-      background: var(--panel); box-shadow: 0 8px 28px #0008, inset 0 0 0 1px #ffffff0c;
+      position: relative; overflow: hidden; border-radius: 12px;
     }
     .reel img {
       display: block; width: 100%; height: 100%; object-fit: contain;
@@ -35,7 +44,6 @@
     .reel.spinning img { filter: blur(1px) brightness(1.08); }
     .reel::after {
       content: ""; position: absolute; inset: 0; pointer-events: none;
-      background: linear-gradient(180deg, #0003, transparent 18%, transparent 82%, #0004);
     }
     .controls { width: 100%; display: grid; justify-items: center; gap: 10px; }
     button {
@@ -52,15 +60,20 @@
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { transition: none !important; }
     }
+    .card-stage { position: relative; width: 100%; line-height: 0; }
+    .card-image { display: block; width: 100%; height: auto; }
   </style>
 </head>
 <body>
   <main>
     <h1>ウルザのガチャガチャ</h1>
-    <section class="reels" aria-label="ルーレット">
-      <div class="reel"><img id="plus" alt="プラスの結果" src="image/urz_plus_0.png"></div>
-      <div class="reel"><img id="minus" alt="マイナスの結果" src="image/urz_minus_0.png"></div>
-      <div class="reel"><img id="ogi" alt="オギの結果" src="image/urz_ogi_0.png"></div>
+    <section class="card-stage" aria-label="カード画像">
+      <img class="card-image" src="image/uruza.png">
+      <section class="reels" aria-label="ルーレット">
+        <div class="reel"><img id="plus" alt="プラスの結果" src="image/urz_plus_0.png"></div>
+        <div class="reel"><img id="minus" alt="マイナスの結果" src="image/urz_minus_0.png"></div>
+        <div class="reel"><img id="ogi" alt="オギの結果" src="image/urz_ogi_0.png"></div>
+      </section>
     </section>
     <div class="controls">
       <button id="spin" type="button">{T}: ウルザのガチャガチャを回す。</button>
